@@ -1,4 +1,8 @@
 <?php
+/*
+Export to db delete ol from db and uncoment 119 and 127 lines
+
+*/
 function xmlToArray($xml, $root = true) {
 	if (!$xml->children()) {
 		return (string)$xml;
@@ -88,31 +92,6 @@ function writeGyv($id){
 		
 	}
 }
-
-function writeMicro($id,$parent_id){
-	$source = "http://domo.plius.lt/importhandler?datacollector=1&fk_placereg_adm_units_id=".$parent_id."&fk_placereg_settlements_id=".$id."&get_fk_placereg_microdistricts_id=1";
-
-	echo $source."\n";
-	$xmlstr = file_get_contents($source);
-	$xmlcont = new SimpleXMLElement($xmlstr);
-	$micro_arr = xmlToArray($xmlcont);
-	$micro_arr = itemArr($micro_arr);
-	//print_r($micro_arr);
-	if(!$micro_arr[0]){
-		$micro_arr= array(0=>$micro_arr);
-	}
-
-	/* savyvaldybes ty mysql */
-
-	foreach($micro_arr as $micro){
-		echo "SAV_id = ".$id." Mikro raj: ID = ".$micro['id']." Name = ".$micro['title']."\n";	
-		$sql = "INSERT INTO mikro_raj (id, sav_id, name) VALUES ('".$micro['id']."', '".$id."','".mysql_real_escape_string($micro['title'])."')";
-		mysql_query($sql) or die(mysql_error()); 
-		
-	}
-
-}
-
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -136,7 +115,7 @@ $selected = mysql_select_db("ltntdb",$conn);
 		/* savyvaldibiu import */
 		foreach($sav_arr as $sav)
 		{
-			//$sql = "INSERT INTO sav (id, name) VALUES ('".$sav['id']."', '".mysql_real_escape_string($sav['title'])."')";
+			$sql = "INSERT INTO sav (id, name) VALUES ('".$sav['id']."', '".mysql_real_escape_string($sav['title'])."')";
 			//mysql_query($sql) or die(mysql_error()); 
 			//echo "Savyvaldybe: ID = ".$sav['id']." Name = ".$sav['title']."<br>";	
 			
@@ -148,20 +127,6 @@ $selected = mysql_select_db("ltntdb",$conn);
 			//writeGyv($sav['id']);
 		}
 
-
-
-		/* mikrorajonu importas */
-
-		$sql = "SELECT id,name,sav_id FROM gyv";
-		$gyv = mysql_query($sql) or die(mysql_error()); 
-	    $gyv_arr = array();
-	    while($row = mysql_fetch_assoc($gyv)){
-	    $gyv_arr[] = $row; 
-
-	    }
-	    foreach($gyv_arr as $gyv){
-	    	writeMicro($gyv['id'],$gyv['sav_id']);
-	    }
 
 
 		?>
