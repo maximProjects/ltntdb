@@ -1,7 +1,7 @@
 <?php
 /*
+Scripts get data from http://www.plius.lt/imports?domo_xml_import
 Export to db delete ol from db and uncoment 119 and 127 lines
-
 */
 function xmlToArray($xml, $root = true) {
 	if (!$xml->children()) {
